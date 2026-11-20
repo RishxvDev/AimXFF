@@ -28,11 +28,14 @@ jobs:
       - name: Locate project
         id: proj
         run: |
+          if [ -z "$(find . -name settings.gradle.kts | head -1)" ]; then
+            z=$(ls ./*.zip 2>/dev/null | head -1)
+            if [ -n "$z" ]; then echo "Unzipping $z"; unzip -q -o "$z"; fi
+          fi
           f=$(find . -name settings.gradle.kts | head -1)
           if [ -z "$f" ]; then echo "settings.gradle.kts not found. Files in repo:"; find . -maxdepth 3 -not -path './.git/*'; exit 1; fi
           echo "dir=$(dirname "$f")" >> "$GITHUB_OUTPUT"
           echo "Project folder: $(dirname "$f")"
-
       - name: Accept Android SDK licenses
         run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
 
